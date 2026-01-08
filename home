@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Event Marketing Timeline</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 40px; max-width: 720px; }
+    h1 { margin: 0 0 8px; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 20px; margin-top: 16px; }
+    label { display: block; margin: 14px 0 6px; font-weight: 600; }
+    input[type="date"] { padding: 10px; font-size: 16px; }
+    button { padding: 10px 14px; font-size: 16px; border: 0; border-radius: 10px; cursor: pointer; }
+    button.primary { background: #22326e; color: #fff; }
+    button.secondary { background: #eee; }
+    .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 14px; }
+    ul { padding-left: 18px; }
+    li { margin: 10px 0; }
+    .muted { color: #666; }
+    .pill { display:inline-block; padding: 4px 10px; background:#f4f4f4; border-radius:999px; font-size: 13px; margin-left: 8px; }
+    .error { color: #b00020; margin-top: 10px; }
+    pre { background: #fafafa; border: 1px solid #eee; padding: 12px; border-radius: 10px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Event Marketing Timeline</h1>
+  <div class="muted">Enter an event date to generate recommended marketing deadlines.</div>
+
+  <div id="screenInput" class="card">
+    <label for="eventDate">Event Date</label>
+    <input id="eventDate" type="date" />
+    <div class="row">
+      <button class="primary" id="submitBtn">Submit</button>
+    </div>
+    <div class="error" id="error"></div>
+  </div>
+
+  <div id="screenResults" class="card" style="display:none;">
+    <div><strong>Event Date:</strong> <span id="eventDateOut"></span></div>
+
+    <ul id="resultsList"></ul>
+
+    <div class="row">
+      <button class="secondary" id="backBtn">Back / Change Date</button>
+      <button class="primary" id="copyBtn">Copy to Clipboard</button>
+    </div>
+
+    <div style="margin-top:14px;">
+      <div class="muted">Copy preview:</div>
+      <pre id="copyPreview"></pre>
+    </div>
+  </div>
+
+<script>
+  // --- Helpers ---
+  function parseLocalDate(yyyyMmDd) {
+    // Avoid timezone shifting by constructing a local date at noon.
+    const [y, m, d] = yyyyMmDd.split("-").map(Number);
+    return new Date(y, m - 1, d, 12, 0, 0);
+  }
+
+  function formatDate(d) {
+    // Formats as e.g. Jan 8, 2026
+    return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
+  }
+
+  function addDays(date, days) {
+    const d = new Date(date.getTime());
+    d.setDate(d.getDate() + days);
+    return d;
+  }
+
+  function uniqueSortedDates(dates) {
+    const seen = new Set();
+    const uniq = [];
+    for (const d of dates) {
+      const key = d.toDateString();
+      if (!seen.has(key)) { seen.add(key); uniq.push(d); }
+    }
+    return uniq.sort((a,b)=>a-b);
+  }
+
+  // Social post date logic:
+  // Pick 3 spaced offsets within 0–45 days prior (inclusive), not adjacent.
+  // Deterministic: 45, 28, 12 days prior.
+  // If the event is very close and these go "before today" that's OK — user asked relative to event date.
+  function getSocialPostDates(eventDate) {
+    const offsets = [45, 28, 12]; // days before event
+    const dates = offsets.map(off => addDays(eventDate, -off));
+    return uniqueSortedDates(dates);
+  }
+
+  function buildText(eventDate) {
+    const d90 = addDays(eventDate, -90);
+    const d60 = addDays(eventDate, -60);
+    const d30 = addDays(eventDate, -30);
+    const d20 = addDays(eventDate, -20);
+
+    const weeklyStart = d90;
+    const weeklyEnd = d60;
+
+    const socialDates = getSocialPostDates(eventDate);
+
+    const items = [
+      { label: "Create Marketing Assets", value: formatDate(d90), pill: "90 days prior" },
+      { label: "Create MembersFirst Event", value: formatDate(d90), pill: "90 days prior" },
+      { label: "Begin including in weekly emails", value: `${formatDate(weeklyStart)} – ${formatDate(weeklyEnd)}`, pill: "90–60 days prior" },
+      { label: "Schedule three social media posts", value: socialDates.map(formatDate).join(", "), pill: "45–0 days prior" },
+      { label: "Send a push notification", value: formatDate(d30), pill: "30 days prior" },
+      { label: "Send a text message", value: formatDate(d20), pill: "20 days prior" },
+    ];
+
+    const copyLines = [
+      `Event Date: ${formatDate(eventDate)}`,
+      "",
+      ...items.map(i => `• ${i.label}: ${i.value}`)
+    ];
+
+    return { items, copyText: copyLines.join("\n") };
+  }
+
+  // --- UI wiring ---
+  const screenInput = document.getElementById("screenInput");
+  const screenResults = document.getElementById("screenResults");
+  const eventDateEl = document.getElementById("eventDate");
+  const eventDateOut = document.getElementById("eventDateOut");
+  const resultsList = document.getElementById("resultsList");
+  const errorEl = document.getElementById("error");
+  const copyBtn = document.getElementById("copyBtn");
+  const copyPreview = document.getElementById("copyPreview");
+
+  document.getElementById("submitBtn").addEventListener("click", () => {
+    errorEl.textContent = "";
+    const val = eventDateEl.value;
+    if (!val) {
+      errorEl.textContent = "Please choose an event date.";
+      return;
+    }
+
+    const eventDate = parseLocalDate(val);
+    const { items, copyText } = buildText(eventDate);
+
+    eventDateOut.textContent = formatDate(eventDate);
+    resultsList.innerHTML = "";
+    items.forEach(i => {
+      const li = document.createElement("li");
+      li.innerHTML = `<strong>${i.label}:</strong> ${i.value} <span class="pill">${i.pill}</span>`;
+      resultsList.appendChild(li);
+    });
+
+    copyPreview.textContent = copyText;
+
+    screenInput.style.display = "none";
+    screenResults.style.display = "block";
+  });
+
+  document.getElementById("backBtn").addEventListener("click", () => {
+    screenResults.style.display = "none";
+    screenInput.style.display = "block";
+  });
+
+  copyBtn.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(copyPreview.textContent);
+      copyBtn.textContent = "Copied!";
+      setTimeout(() => copyBtn.textContent = "Copy to Clipboard", 1200);
+    } catch (e) {
+      alert("Copy failed — your browser may block clipboard access. You can manually select and copy the text in the preview box.");
+    }
+  });
+</script>
+</body>
+</html>
