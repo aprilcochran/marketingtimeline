@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.2">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!doctype html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta charset="utf-8" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;meta name="viewport" content="width=device-width,initial-scale=1" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;title&gt;Event Marketing Timeline&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 40px; max-width: 720px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>h1 { margin: 0 0 8px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.card { border: 1px solid #ddd; border-radius: 12px; padding: 20px; margin-top: 16px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>label { display: block; margin: 14px 0 6px; font-weight: 600; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>input[type="date"] { padding: 10px; font-size: 16px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>button { padding: 10px 14px; font-size: 16px; border: 0; border-radius: 10px; cursor: pointer; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>button.primary { background: #22326e; color: #fff; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>button.secondary { background: #eee; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 14px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>ul { padding-left: 18px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>li { margin: 10px 0; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.muted { color: #666; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.pill { display:inline-block; padding: 4px 10px; background:#f4f4f4; border-radius:999px; font-size: 13px; margin-left: 8px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>.error { color: #b00020; margin-top: 10px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>pre { background: #fafafa; border: 1px solid #eee; padding: 12px; border-radius: 10px; white-space: pre-wrap; }</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;h1&gt;Event Marketing Timeline&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="muted"&gt;Enter an event date to generate recommended marketing deadlines.&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="screenInput" class="card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;label for="eventDate"&gt;Event Date&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;input id="eventDate" type="date" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="row"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="primary" id="submitBtn"&gt;Submit&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="error" id="error"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;div id="screenResults" class="card" style="display:none;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div&gt;&lt;strong&gt;Event Date:&lt;/strong&gt; &lt;span id="eventDateOut"&gt;&lt;/span&gt;&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;ul id="resultsList"&gt;&lt;/ul&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="row"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="secondary" id="backBtn"&gt;Back / Change Date&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="primary" id="copyBtn"&gt;Copy to Clipboard&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div style="margin-top:14px;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="muted"&gt;Copy preview:&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>&lt;pre id="copyPreview"&gt;&lt;/pre&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// --- Helpers ---</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function parseLocalDate(yyyyMmDd) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Avoid timezone shifting by constructing a local date at noon.</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const [y, m, d] = yyyyMmDd.split("-").map(Number);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return new Date(y, m - 1, d, 12, 0, 0);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function formatDate(d) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// Formats as e.g. Jan 8, 2026</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function addDays(date, days) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const d = new Date(date.getTime());</p>
+<p class="p1"><span class="Apple-converted-space">    </span>d.setDate(d.getDate() + days);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return d;</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function uniqueSortedDates(dates) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const seen = new Set();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const uniq = [];</p>
+<p class="p1"><span class="Apple-converted-space">    </span>for (const d of dates) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const key = d.toDateString();</p>
+<p class="p1"><span class="Apple-converted-space">      </span>if (!seen.has(key)) { seen.add(key); uniq.push(d); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return uniq.sort((a,b)=&gt;a-b);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// Social post date logic:</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// Pick 3 spaced offsets within 0–45 days prior (inclusive), not adjacent.</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// Deterministic: 45, 28, 12 days prior.</p>
+<p class="p1"><span class="Apple-converted-space">  </span>// If the event is very close and these go "before today" that's OK — user asked relative to event date.</p>
+<p class="p1"><span class="Apple-converted-space">  </span>function getSocialPostDates(eventDate) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const offsets = [45, 28, 12]; // days before event</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const dates = offsets.map(off =&gt; addDays(eventDate, -off));</p>
+<p class="p1"><span class="Apple-converted-space">    </span>return uniqueSortedDates(dates);</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>function buildText(eventDate) {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const d90 = addDays(eventDate, -90);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const d60 = addDays(eventDate, -60);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const d30 = addDays(eventDate, -30);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const d20 = addDays(eventDate, -20);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>const weeklyStart = d90;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const weeklyEnd = d60;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>const socialDates = getSocialPostDates(eventDate);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>const items = [</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{ label: "Create Marketing Assets", value: formatDate(d90), pill: "90 days prior" },</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{ label: "Create MembersFirst Event", value: formatDate(d90), pill: "90 days prior" },</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{ label: "Begin including in weekly emails", value: `${formatDate(weeklyStart)} – ${formatDate(weeklyEnd)}`, pill: "90–60 days prior" },</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{ label: "Schedule three social media posts", value: socialDates.map(formatDate).join(", "), pill: "45–0 days prior" },</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{ label: "Send a push notification", value: formatDate(d30), pill: "30 days prior" },</p>
+<p class="p1"><span class="Apple-converted-space">      </span>{ label: "Send a text message", value: formatDate(d20), pill: "20 days prior" },</p>
+<p class="p1"><span class="Apple-converted-space">    </span>];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>const copyLines = [</p>
+<p class="p1"><span class="Apple-converted-space">      </span>`Event Date: ${formatDate(eventDate)}`,</p>
+<p class="p1"><span class="Apple-converted-space">      </span>"",</p>
+<p class="p1"><span class="Apple-converted-space">      </span>...items.map(i =&gt; `• ${i.label}: ${i.value}`)</p>
+<p class="p1"><span class="Apple-converted-space">    </span>];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>return { items, copyText: copyLines.join("\n") };</p>
+<p class="p1"><span class="Apple-converted-space">  </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>// --- UI wiring ---</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const screenInput = document.getElementById("screenInput");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const screenResults = document.getElementById("screenResults");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const eventDateEl = document.getElementById("eventDate");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const eventDateOut = document.getElementById("eventDateOut");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const resultsList = document.getElementById("resultsList");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const errorEl = document.getElementById("error");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const copyBtn = document.getElementById("copyBtn");</p>
+<p class="p1"><span class="Apple-converted-space">  </span>const copyPreview = document.getElementById("copyPreview");</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById("submitBtn").addEventListener("click", () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>errorEl.textContent = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const val = eventDateEl.value;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>if (!val) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>errorEl.textContent = "Please choose an event date.";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>const eventDate = parseLocalDate(val);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const { items, copyText } = buildText(eventDate);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>eventDateOut.textContent = formatDate(eventDate);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>resultsList.innerHTML = "";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>items.forEach(i =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>const li = document.createElement("li");</p>
+<p class="p1"><span class="Apple-converted-space">      </span>li.innerHTML = `&lt;strong&gt;${i.label}:&lt;/strong&gt; ${i.value} &lt;span class="pill"&gt;${i.pill}&lt;/span&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">      </span>resultsList.appendChild(li);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>copyPreview.textContent = copyText;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>screenInput.style.display = "none";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>screenResults.style.display = "block";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById("backBtn").addEventListener("click", () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>screenResults.style.display = "none";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>screenInput.style.display = "block";</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">  </span>copyBtn.addEventListener("click", async () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">    </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>await navigator.clipboard.writeText(copyPreview.textContent);</p>
+<p class="p1"><span class="Apple-converted-space">      </span>copyBtn.textContent = "Copied!";</p>
+<p class="p1"><span class="Apple-converted-space">      </span>setTimeout(() =&gt; copyBtn.textContent = "Copy to Clipboard", 1200);</p>
+<p class="p1"><span class="Apple-converted-space">    </span>} catch (e) {</p>
+<p class="p1"><span class="Apple-converted-space">      </span>alert("Copy failed — your browser may block clipboard access. You can manually select and copy the text in the preview box.");</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">  </span>});</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
