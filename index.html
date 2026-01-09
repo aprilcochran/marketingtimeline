@@ -1,85 +1,146 @@
-<script>
-  function format(d) {
-    return d.toLocaleDateString(undefined, {
-      month: 'short', day: 'numeric', year: 'numeric'
-    });
-  }
-
-  function addDays(date, days) {
-    const d = new Date(date);
-    d.setDate(d.getDate() + days);
-    return d;
-  }
-
-  // Evenly spaced N dates from startOffset -> endOffset (both "days before event")
-  // Example: N=3, start=30, end=10 => [30,20,10] days before
-  function evenlySpacedOffsets(count, startBefore, endBefore) {
-    if (count <= 1) return [startBefore];
-    const span = startBefore - endBefore; // e.g., 30-10 = 20
-    const step = span / (count - 1);      // e.g., 20/2 = 10
-    const offsets = [];
-    for (let i = 0; i < count; i++) {
-      offsets.push(Math.round(startBefore - step * i));
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Event Marketing Timeline</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      margin: 40px;
+      max-width: 720px;
     }
-    // Ensure first/last are exact
-    offsets[0] = startBefore;
-    offsets[offsets.length - 1] = endBefore;
-
-    // Ensure uniqueness if rounding ever collides (rare but safe)
-    const uniq = [...new Set(offsets)];
-    while (uniq.length < count) {
-      // add 1 day adjustments if needed
-      const last = uniq[uniq.length - 1];
-      uniq.push(last - 1);
+    h1 { margin-bottom: 8px; }
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 16px;
     }
-    return uniq;
-  }
+    label {
+      display: block;
+      margin: 14px 0 6px;
+      font-weight: 600;
+    }
+    input[type="date"] {
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 14px;
+      font-size: 16px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .primary { background: #22326e; color: #fff; }
+    .secondary { background: #eee; }
+    ul { padding-left: 18px; }
+    li { margin: 10px 0; }
+    .muted { color: #666; }
+  </style>
+</head>
 
-  function generate() {
-    const input = document.getElementById("eventDate").value;
-    if (!input) return alert("Please select a date");
+<body>
+  <h1>Event Marketing Timeline</h1>
+  <p class="muted">Enter an event date to generate recommended marketing deadlines.</p>
 
-    // local noon avoids timezone weirdness
-    const eventDate = new Date(input + "T12:00:00");
+  <div class="card">
+    <label for="eventDate">Event Date</label>
+    <input id="eventDate" type="date" />
+    <br><br>
+    <button class="primary" type="button" onclick="generate()">Submit</button>
+  </div>
 
-    const list = document.getElementById("output");
-    list.innerHTML = "";
+  <div class="card" id="results" style="display:none;">
+    <h3>Results</h3>
+    <ul id="output"></ul>
+    <button class="secondary" type="button" onclick="location.reload()">Change Date</button>
+  </div>
 
-    const d90 = addDays(eventDate, -90);
+  <script>
+    function format(d) {
+      return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+    }
 
-    // Weekly emails window: 60 → 45 days before
-    const weeklyStart = addDays(eventDate, -60);
-    const weeklyEnd = addDays(eventDate, -45);
+    function addDays(date, days) {
+      const d = new Date(date);
+      d.setDate(d.getDate() + days);
+      return d;
+    }
 
-    // Social posts: 3 posts evenly spaced from 30 → 10 days before
-    const socialOffsets = evenlySpacedOffsets(3, 30, 10);
-    const socialDates = socialOffsets
-      .map(off => format(addDays(eventDate, -off)))
-      .join(", ");
+    // Evenly spaced "days before event" offsets (integers).
+    // Example: count=3, start=30, end=10 => [30, 20, 10]
+    function evenlySpacedOffsets(count, startBefore, endBefore) {
+      if (count <= 1) return [startBefore];
+      const span = startBefore - endBefore;
+      const step = span / (count - 1);
+      const offsets = [];
+      for (let i = 0; i < count; i++) {
+        offsets.push(Math.round(startBefore - step * i));
+      }
+      offsets[0] = startBefore;
+      offsets[offsets.length - 1] = endBefore;
 
-    // Push notifications: 30 days before AND 7 days before
-    const pushDates = [30, 7]
-      .map(off => format(addDays(eventDate, -off)))
-      .join(", ");
+      // Ensure unique offsets (rare edge case if rounding collides)
+      const uniq = [];
+      for (const o of offsets) {
+        if (!uniq.includes(o)) uniq.push(o);
+      }
+      while (uniq.length < count) uniq.push(uniq[uniq.length - 1] - 1);
+      return uniq;
+    }
 
-    // Text message: 14 days before
-    const textDate = format(addDays(eventDate, -14));
+    function generate() {
+      const input = document.getElementById("eventDate").value;
+      if (!input) return alert("Please select a date");
 
-    const items = [
-      ["Create Marketing Assets", format(d90)],
-      ["Create MembersFirst Event", format(d90)],
-      ["Begin including in weekly emails", `${format(weeklyStart)} – ${format(weeklyEnd)}`],
-      ["Schedule three social media posts", socialDates],
-      ["Send push notifications", pushDates],
-      ["Send a text message", textDate]
-    ];
+      // Local noon avoids timezone weirdness
+      const eventDate = new Date(input + "T12:00:00");
 
-    items.forEach(i => {
-      const li = document.createElement("li");
-      li.innerHTML = `<strong>${i[0]}:</strong> ${i[1]}`;
-      list.appendChild(li);
-    });
+      const list = document.getElementById("output");
+      list.innerHTML = "";
 
-    document.getElementById("results").style.display = "block";
-  }
-</script>
+      // Rules:
+      // - Marketing Assets: 90 days before
+      // - MembersFirst Event: 90 days before
+      // - Weekly emails: 60 → 45 days before
+      // - Social posts (3): evenly spaced 30 → 10 days before
+      // - Push notifications: 30 days before AND 7 days before
+      // - Text message: 14 days before
+
+      const d90 = addDays(eventDate, -90);
+      const weeklyStart = addDays(eventDate, -60);
+      const weeklyEnd = addDays(eventDate, -45);
+
+      const socialOffsets = evenlySpacedOffsets(3, 30, 10);
+      const socialDates = socialOffsets
+        .map(off => format(addDays(eventDate, -off)))
+        .join(", ");
+
+      const pushDates = [30, 7]
+        .map(off => format(addDays(eventDate, -off)))
+        .join(", ");
+
+      const textDate = format(addDays(eventDate, -14));
+
+      const items = [
+        ["Create Marketing Assets", format(d90)],
+        ["Create MembersFirst Event", format(d90)],
+        ["Begin including in weekly emails", `${format(weeklyStart)} – ${format(weeklyEnd)}`],
+        ["Schedule three social media posts", socialDates],
+        ["Send push notifications", pushDates],
+        ["Send a text message", textDate],
+      ];
+
+      items.forEach(([label, value]) => {
+        const li = document.createElement("li");
+        li.innerHTML = `<strong>${label}:</strong> ${value}`;
+        list.appendChild(li);
+      });
+
+      document.getElementById("results").style.display = "block";
+    }
+  </script>
+</body>
+</html>
